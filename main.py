@@ -60,4 +60,4 @@ class Menu:
         img.grid(row=1,column=0)
         frame_image.pack()
 
-if __name__=='__main__': ( Menu(tk.Tk()).window() ).mainloop()
+if __name__=='__main__': ( Menu(tk.Tk()).window() ).mainloop();print(1)
