@@ -2,14 +2,14 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class Grafo:
-    digraph = []
-
     def __init__(self , ordem_schedules,transaction):
+        self.digraph = []
         self.ordem_schedules = ordem_schedules
         self.transaction     = transaction
     
     def Grafo_serialização(self):
         index = 1
+        
         for tupla_i in self.ordem_schedules:
             for tupla_j in self.ordem_schedules[index:]:
    
@@ -27,7 +27,6 @@ class Grafo:
 
     def Plotar_grafo(self):
         self.Grafo_serialização()
-
         G = nx.DiGraph()
         G.add_nodes_from(self.transaction)
         G.add_edges_from(self.digraph)
@@ -40,3 +39,5 @@ class Grafo:
             print('Tem ciclo ')
         else:
             print('Não tem ciclo')
+        
+        
