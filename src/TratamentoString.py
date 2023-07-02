@@ -1,6 +1,6 @@
-
 import re
 from . import Logico
+
 
 def extrair_numeros_regex(operacao): 
     return [int(numero) for numero in re.findall(r'\d+', operacao)]
@@ -26,21 +26,19 @@ class Criando:
         for operacao in self.schedules.split(' '):
             NumeroDaTransacao = extrair_numeros_regex(operacao)[0]
         
-            if 'c' in operacao:  
-                objeto = 'c'
+            if 'C' in operacao:  
+                operacao   = 'C'
             else:                
-                tipoObjeto , objeto = extrair_valor_entre_parenteses(operacao)
+                tipoObjeto = extrair_valor_entre_parenteses(operacao)[0]
   
             if NumeroDaTransacao not in self.transacoes:
                 self.transacoes.append(NumeroDaTransacao)
 
             self.ordem_schedules.append(
-                ( NumeroDaTransacao , operacao[0] , objeto , tipoObjeto )
+                ( NumeroDaTransacao , operacao[0] , tipoObjeto )
             )            
             index+=1
-        print(self.ordem_schedules)
-
-
+            
     def tratamento_schedules(self,S):
         new_S = ''
         S     = S.replace(')',') ').split(' ')  

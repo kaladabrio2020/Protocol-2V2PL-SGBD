@@ -37,6 +37,7 @@ class Menu:
     
 
     def exit(self)  :sys.exit()
+    
     def window(self):return self.master
     def Solver(self):
         solver(self.schedules.get())
@@ -61,5 +62,5 @@ class Menu:
         frame_image.pack()
 
 if __name__=='__main__': 
-    
-    ( Menu(tk.Tk()).window() ).mainloop()
+    solver('w1(a1)w2(a1)')
+    #( Menu(tk.Tk()).window() ).mainloop()
