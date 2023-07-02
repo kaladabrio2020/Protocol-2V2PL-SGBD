@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy    as np
 import matplotlib.pyplot as plt
 
 class Grafo:
@@ -21,8 +22,7 @@ class Grafo:
                 elif   (tupla_i[1] != tupla_j[1]):
                     if (tupla_i[2] == tupla_j[2]): self.digraph.append((tupla_i[0],tupla_j[0]))
             index+=1
-
-
+    
     def Plotar_grafo(self):
         self.Grafo_serialização()
 
@@ -34,9 +34,10 @@ class Grafo:
         nx.draw(G, pos,  with_labels = True, arrows = True, connectionstyle='arc3, rad = 0.1')
     
         if len(list(nx.simple_cycles(G))) != 0 :  
-            plt.title('Tem ciclo')
+            string = 'Não tem ciclo'
         else:                                     
-            plt.title('Não tem ciclo')
+            string = ' Tem ciclo'
+        plt.title(string)
         plt.show()
         
 
