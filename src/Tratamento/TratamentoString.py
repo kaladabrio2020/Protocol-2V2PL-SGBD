@@ -1,5 +1,5 @@
 import re
-from . import Logico
+from ..Protocol import Logico
 
 
 def extrair_numeros_regex(operacao): 
@@ -15,7 +15,6 @@ def extrair_valor_entre_parenteses(operacao):
 
 
 class Criando:
-    
     def __init__(self,S): 
         self.schedules       = self.tratamento_schedules(S)
         self.ordem_schedules = []

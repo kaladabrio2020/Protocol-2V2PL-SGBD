@@ -1,9 +1,10 @@
-from . import Grafo
-from . import TratamentoString
-from . import CriandoObjeto
+from .Grafos       import Grafo
+from .Tratamento   import TratamentoString
+from .Protocol     import CriandoObjeto
 
 
 def solver(S):
+
     objetos = CriandoObjeto.CriandoObjeto()
     criando = TratamentoString.Criando(S)
     criando.Criando_transacao()

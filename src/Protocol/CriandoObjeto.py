@@ -1,4 +1,4 @@
-from . import Logico
+from ..Protocol import Logico
 
 class CriandoObjeto:
     def __init__(self):
