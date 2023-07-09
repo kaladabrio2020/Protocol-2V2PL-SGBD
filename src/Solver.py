@@ -1,16 +1,25 @@
 from .Grafos       import Grafo
 from .Tratamento   import TratamentoString
-from .Protocol     import CriandoObjeto
+from .Protocol     import CriandoLogico
+from .Protocol     import Protocolo2v2pl
+
 
 
 def solver(S):
-
-    objetos = CriandoObjeto.CriandoObjeto()
-    criando = TratamentoString.Criando(S)
+    criando  = TratamentoString.Tratamento(S)
     criando.Criando_transacao()
+    print(criando.ordem_schedules)
+    #grafo   = Grafo.Grafo(criando.ordem_schedules,criando.transacoes)
+    #grafo.Plotar_grafo()
+
+    protocol = Protocolo2v2pl.Protocolo2v2pl(
+        CriandoLogico.CriandoLogico()
+        )
+    protocol.SetSysLockInfo(criando.ordem_schedules)
+
     
-    grafo   = Grafo.Grafo(criando.ordem_schedules,criando.transacoes)
-    grafo.Plotar_grafo()
+    
+
     
 
         

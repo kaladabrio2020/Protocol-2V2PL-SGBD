@@ -14,7 +14,7 @@ def extrair_valor_entre_parenteses(operacao):
         raise ValueError(f'Não existe objeto nessa operacao {operacao}')
 
 
-class Criando:
+class Tratamento:
     def __init__(self,S): 
         self.schedules       = self.tratamento_schedules(S)
         self.ordem_schedules = []
@@ -24,11 +24,9 @@ class Criando:
         index = 0
         for operacao in self.schedules.split(' '):
             NumeroDaTransacao = extrair_numeros_regex(operacao)[0]
-        
-            if 'C' in operacao:  
-                operacao   = 'C'
-            else:                
-                tipoObjeto = extrair_valor_entre_parenteses(operacao)[0]
+            
+            if 'C' in operacao:  tipoObjeto = None
+            else:                tipoObjeto = extrair_valor_entre_parenteses(operacao)[0]
   
             if NumeroDaTransacao not in self.transacoes:
                 self.transacoes.append(NumeroDaTransacao)
@@ -45,7 +43,7 @@ class Criando:
             if 'c' in operacao: new_S += operacao[:2]+' '+operacao[2:]+' '
             else:               new_S +=operacao+' '
             
-        return new_S.upper()[:len(new_S)-2]
+        return new_S.upper()[:len(new_S)-1]
 
             
         

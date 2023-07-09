@@ -62,5 +62,5 @@ class Menu:
         frame_image.pack()
 
 if __name__=='__main__': 
-    solver('w1(a1)w2(a1)')
+    solver('r1(tp1)w1(tp1)r2(tp1)r2(tp2)w3(a1)c1c3c2')
     #( Menu(tk.Tk()).window() ).mainloop()

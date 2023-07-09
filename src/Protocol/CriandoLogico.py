@@ -1,9 +1,9 @@
 from ..Protocol import Logico
 
-class CriandoObjeto:
+class CriandoLogico:
     def __init__(self):
         #CRIANDO DATABASE
-        self.Database = Logico.Database('BD')
+        self.Database = Logico.Database('DB')
 
         #CRINADO AREA
         self.Area_1   = Logico.Area('A1')
@@ -93,21 +93,26 @@ class CriandoObjeto:
         self.Tupla_16.predecessor = self.Pagina_8
 
 #---------------------------------------------------------------
-        self.Database.area   = [self.Area_1,self.Area_1]
+        self.Database.lista = [self.Area_1,self.Area_2]
         
-        self.Area_1.tabela   = [self.Tabela_1,self.Tabela_2]
-        self.Area_2.tabela   = [self.Tabela_3,self.Tabela_4]
+        self.Area_1.lista   = [self.Tabela_1,self.Tabela_2]
+        self.Area_2.lista   = [self.Tabela_3,self.Tabela_4]
 
-        self.Tabela_1.pagina = [self.Pagina_1,self.Pagina_2]
-        self.Tabela_2.pagina = [self.Pagina_3,self.Pagina_4]
-        self.Tabela_3.pagina = [self.Pagina_5,self.Pagina_6]
-        self.Tabela_4.pagina = [self.Pagina_7,self.Pagina_8]
+        self.Tabela_1.lista = [self.Pagina_1,self.Pagina_2]
+        self.Tabela_2.lista = [self.Pagina_3,self.Pagina_4]
+        self.Tabela_3.lista = [self.Pagina_5,self.Pagina_6]
+        self.Tabela_4.lista = [self.Pagina_7,self.Pagina_8]
 
-        self.Pagina_1.tupla = [self.Tupla_1, self.Tupla_2  ]
-        self.Pagina_2.tupla = [self.Tupla_3, self.Tupla_4  ]
-        self.Pagina_3.tupla = [self.Tupla_5, self.Tupla_6  ]
-        self.Pagina_4.tupla = [self.Tupla_7, self.Tupla_8  ]
-        self.Pagina_5.tupla = [self.Tupla_9, self.Tupla_10 ]
-        self.Pagina_6.tupla = [self.Tupla_11, self.Tupla_12]
-        self.Pagina_7.tupla = [self.Tupla_13, self.Tupla_14]
-        self.Pagina_8.tupla = [self.Tupla_15, self.Tupla_16]
+        self.Pagina_1.lista = [self.Tupla_1, self.Tupla_2  ]
+        self.Pagina_2.lista = [self.Tupla_3, self.Tupla_4  ]
+        self.Pagina_3.lista = [self.Tupla_5, self.Tupla_6  ]
+        self.Pagina_4.lista = [self.Tupla_7, self.Tupla_8  ]
+        self.Pagina_5.lista = [self.Tupla_9, self.Tupla_10 ]
+        self.Pagina_6.lista = [self.Tupla_11, self.Tupla_12]
+        self.Pagina_7.lista = [self.Tupla_13, self.Tupla_14]
+        self.Pagina_8.lista = [self.Tupla_15, self.Tupla_16]
+
+
+        
+
+        

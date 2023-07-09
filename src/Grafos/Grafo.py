@@ -16,7 +16,8 @@ class Grafo:
                 elif ('C' == tupla_i[1] or  'C' == tupla_j[1]): pass
                 elif ('R' == tupla_i[1] and 'R' == tupla_j[1]): pass
 
-                elif   ('W' == tupla_i[1] and 'W' == tupla_j[1]):
+                elif   ('W' == tupla_i[1] and 'W' == tupla_j[1] or
+                        'U' == tupla_i[1] and 'U' == tupla_j[1]):
                     if (tupla_i[2] == tupla_j[2]): self.digraph.append((tupla_i[0],tupla_j[0]))
 
                 elif   (tupla_i[1] != tupla_j[1]):
