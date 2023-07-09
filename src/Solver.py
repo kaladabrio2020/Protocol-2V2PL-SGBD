@@ -7,15 +7,17 @@ from .Protocol     import Protocolo2v2pl
 
 def solver(S):
     criando  = TratamentoString.Tratamento(S)
-    criando.Criando_transacao()
-    print(criando.ordem_schedules)
-    #grafo   = Grafo.Grafo(criando.ordem_schedules,criando.transacoes)
-    #grafo.Plotar_grafo()
+    
 
+    criando.Criando_transacao()
+    grafo   = Grafo.Grafo(criando.ordem_schedules,criando.transacoes)
+    grafo.Plotar_grafo()
+
+    
     protocol = Protocolo2v2pl.Protocolo2v2pl(
         CriandoLogico.CriandoLogico()
         )
-    protocol.SetSysLockInfo(criando.ordem_schedules)
+    return protocol.SetSysLockInfo(criando.ordem_schedules)
 
     
     

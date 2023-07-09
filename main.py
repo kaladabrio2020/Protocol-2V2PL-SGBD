@@ -40,27 +40,39 @@ class Menu:
     
     def window(self):return self.master
     def Solver(self):
-        solver(self.schedules.get())
-        self.Popup()
+        string = solver(self.schedules.get())
+        self.Popup(string)
 
-    def Popup(self):
+    def Popup(self,string):
         popup = tk.Toplevel(self.master)
         popup.title('Solver')
         popup.geometry(f'+10+50')
 
-        frame_image  = tk.Frame(popup) 
-        tk.Label(frame_image,text='Imagem' ).grid(row=0,column=0)
+        frame_gera   = tk.Frame(popup)
+        frame_image  = tk.Frame(frame_gera)
+        frame_texto  = tk.Frame(frame_gera) 
+        tk.Label(frame_image,text='Grafo de serialização' ).grid(row=0,column=0)
 
         image   = Image.open('grafo.png')
-        image   = image.resize((500,500))
+        image   = image.resize((420,450))
         display = ImageTk.PhotoImage(image)
         
         img = tk.Label(frame_image, image=display)
         
         img.image = display
         img.grid(row=1,column=0)
-        frame_image.pack()
+
+        tk.Label(frame_texto,text='Passos' ).grid(row=0,column=0)
+
+        texto = tk.Text(frame_texto, height = 25,width = 40)
+        texto.insert(END, string)
+        
+        texto.grid(row=1,column=0)
+
+        frame_texto.grid(row=0,column=1,padx=5,pady=5)
+        frame_image.grid(row=0,column=0,padx=5,pady=5)
+        frame_gera.pack()
 
 if __name__=='__main__': 
-    solver('r1(tp1)w1(tp1)r2(tp1)r2(tp2)w3(a1)c1c3c2')
-    #( Menu(tk.Tk()).window() ).mainloop()
+    solver('r1(a1)w1(a1)w2(a1)w3(a1)c3c2c1')
+    # ( Menu(tk.Tk()).window() ).mainloop()

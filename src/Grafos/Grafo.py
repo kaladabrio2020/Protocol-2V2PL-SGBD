@@ -39,7 +39,7 @@ class Grafo:
         else:                                     
             string = ' Tem ciclo'
         plt.title(string)
-        plt.show()
+        plt.savefig('grafo.png')
         
 
         

@@ -1,6 +1,21 @@
+import pandas as pd
+
+
 class Protocolo2v2pl:
-    SysLockInfo = []
-    def __init__(self,Logico): self.Logico = Logico
+    Espera      = []
+
+    SysLockInfo = pd.DataFrame(
+        {
+            'Transacao':[],
+            'Objeto'   :[],
+            'Operacao' :[],
+            'Status'   :[]
+        }
+    )
+
+
+    def __init__(self,Logico): 
+        self.Logico = Logico
 
     def SetSysLockInfo(self,schedule):
         for tupla in schedule:
@@ -9,16 +24,38 @@ class Protocolo2v2pl:
                 self.Commit(tupla)  
             else:
                 Status = self.AdicionarBloqueio(tupla[1],tupla[2])
-                self.SysLockInfo.append(
-                    (tupla[0],tupla[2],tupla[1]+'l',Status)
-                )
-        print(self.SysLockInfo)
-        
+
+                self.SysLockInfo.loc[
+                    len(self.SysLockInfo)
+                ] = [tupla[0],tupla[2],tupla[1]+'L',Status]
             
+        print(self.Espera)
+        
+        print(self.SysLockInfo)
+
     def Commit(self,tuplaDoCommit):
+        transacao    = tuplaDoCommit[0]
+
+        dataCommit   = self.SysLockInfo.loc[self.SysLockInfo['Transacao'] == transacao]
+        dataFrame    = self.SysLockInfo[self.SysLockInfo.index<transacao]
+        
+        for IndiceC , LinhaC in dataCommit.iterrows():
+            for IndiceDF , LinhaDF in dataFrame.iterrows():
+                if ( LinhaC['Operacao'] == LinhaDF['Operacao'] and 
+                     LinhaC['Operacao'] == 'WL'   
+                    ):
+                    self.Espera.append(
+                        (LinhaC['Transacao'] , LinhaDF['Transacao'])
+                    )
+
+                    self.SysLockInfo.loc[
+                        len(self.SysLockInfo)
+                    ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3]
     
-        for tupla in self.SysLockInfo:
-            pass
+
+
+
+
             
  
 
@@ -26,109 +63,74 @@ class Protocolo2v2pl:
     def AdicionarBloqueio(self,operacao,objeto):
         database = self.Logico.Database
         if objeto == database.nome:
+
             if ( 'W' == operacao or 'U' == operacao ):
-                if ( database.lock[0] ): database.lock  = ( False , operacao )  
-            
-                else: return 3
+                if ( database.lock[0] ): 
+                    database.lock  = ( False , operacao )  
+                else: 
+                    return 3
 
             if ( 'R' == operacao ):
                 if  ( database.lock[1] == 'U' ): return 3
+                if  ( database.lock[1] == 'C' ): return 3
                 else:                            return 1
-        
-        #===============================================================     
-        for area in database.lista:
-            if  ( not( self.Logico.Database.lock[0] ) ): 
-                area.lock = ( False , operacao )
+        #===============================================================    
+        #  
+        numero = self.AddBlock(database,operacao,objeto)
+        if (numero != None):return numero
 
-            if ( objeto == area.nome ):
+        for area in database.lista:
+            numero = self.AddBlock(area,operacao,objeto)  
+            if (numero != None):return numero
+
+            for tabela in area.lista: 
+                numero = self.AddBlock(tabela,operacao,objeto)
+                if (numero != None):return numero
+           
+                for pagina in tabela.lista:
+                    numero = self.AddBlock(pagina,operacao,objeto)
+                    if (numero != None):return numero
+        return 1
+
+    def AddBlock(self,Pai,operacao,objeto):
+
+        for filho in Pai.lista:
+            if  ( not( Pai.lock[0] ) ): 
+                filho.lock = ( False , operacao )
+             
+            if ( objeto == filho.nome ):
+                
                 if ( 'W' == operacao or 'U' == operacao ):
-                    if ( area.lock[0] ): 
-                        area.lock = ( False , operacao )
-                        self.IntencionalBloqueios('a',area,operacao)
+                    if ( filho.lock[0] ): 
+                        
+                        filho.lock = ( False , operacao )
+                        self.IntencionalBloqueios('a',filho,operacao)
                         return 1
                     else:                
                         return 3
                 
                 if ( 'R' == operacao ):
-                    if ( area.lock[1] == 'U' ): return 3
-                    else :                      return 1  
-
-            #==============================================================
-            for tabela in area.lista:
-                if ( not ( area.lock[0] )):
-                    tabela.lock = ( False , operacao )
-
-                if ( objeto == tabela.nome ):
-                    print(objeto == tabela.nome)
-                    if ( 'W' == operacao or 'U' == operacao ):
-                        if ( tabela.lock[0] ):
-                            tabela.lock = ( False,operacao )
-                            self.IntencionalBloqueios('t',tabela,operacao)                            
-                            return 1
-
-                        else: 
-                            return 3
-
-
-                    if ( 'R' == operacao ):
-                        if ( tabela.lock[1] == 'U' ): return 3
-                        else :                        return 1  
-     
-
-                #=============================================================
-                for  pagina in tabela.lista:
-                    if ( not ( tabela.lock[0] )):
-                        pagina.lock = ( False , operacao )
-                     
-                    if ( objeto == pagina.nome ):
-                        if ( 'W' == operacao or 'U' == operacao ):
-                            if ( pagina.lock[0] ):
-                                pagina.lock = ( False , operacao )
-                                self.IntencionalBloqueios('p',pagina,operacao)
-                                return 1
-                            else: 
-                                return 3
-
-                        if ( 'R' == operacao ):
-                            if ( pagina.lock[1] == 'U' ): return 3
-                            else :                        return 1
-
-                    #+========================================================
-                    for  tupla in pagina.lista:
-                        if ( not ( tupla.lock[0] )): 
-                            tupla.lock = ( False , operacao )
-
-                        if ( objeto == tupla.nome ):
-                            if ( 'W' == operacao or 'U' == operacao ):
-                                if ( tupla.lock[0] ):
-                                    tupla.lock = ( False,operacao )
-                                    self.IntencionalBloqueios('tu',tupla,operacao)
-                                    return 1
-                                else:             
-                                    return 3
-                                
-                            if ( 'R' == operacao ):
-                                if ( tupla.lock[1] == 'U' ): return 3
-                                else :                       return 1
-        return 1
-        
-                    
+                    if ( filho.lock[1] == 'U' ): return 3
+                    if ( filho.lock[1] == 'C' ): return 3
+                    else :                       return 1  
+        return None
+    
     def IntencionalBloqueios(self,chartype,type,operacao):    
     
         if   'a' == chartype:
-            type.predecessor.lock = (False,operacao)
+            type.predecessor.ilock = (False,operacao)
         
         elif 't' == chartype: 
-            type.predecessor.lock             = (False,operacao)
-            type.predecessor.predecessor.lock = (False,operacao)  
+            type.predecessor.ilock             = (False,operacao)
+            type.predecessor.predecessor.ilock = (False,operacao)  
         
         elif 'p' == chartype:
-            type.predecessor.lock                         = (False,operacao)
-            type.predecessor.predecessor.lock             = (False,operacao) 
-            type.predecessor.predecessor.predecessor.lock = (False,operacao) 
+            type.predecessor.lock                          = (False,operacao)
+            type.predecessor.predecessor.ilock             = (False,operacao) 
+            type.predecessor.predecessor.predecessor.ilock = (False,operacao) 
         
         elif 'tu' == chartype:
-            type.predecessor.lock                                     = (False,operacao)
-            type.predecessor.predecessor.lock                         = (False,operacao) 
-            type.predecessor.predecessor.predecessor.lock             = (False,operacao) 
-            type.predecessor.predecessor.predecessor.predecessor.lock = (False,operacao)
+            type.predecessor.ilock                                     = (False,operacao)
+            type.predecessor.predecessor.ilock                         = (False,operacao) 
+            type.predecessor.predecessor.predecessor.ilock             = (False,operacao) 
+            type.predecessor.predecessor.predecessor.predecessor.ilock = (False,operacao)
