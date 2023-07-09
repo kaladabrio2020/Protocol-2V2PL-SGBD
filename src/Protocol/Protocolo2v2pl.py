@@ -42,8 +42,7 @@ class Protocolo2v2pl:
         for IndiceC , LinhaC in dataCommit.iterrows():
             for IndiceDF , LinhaDF in dataFrame.iterrows():
                 if ( LinhaC['Operacao'] == LinhaDF['Operacao'] and 
-                     LinhaC['Operacao'] == 'WL'   
-                    ):
+                     LinhaC['Operacao'] == 'WL' ):
                     self.Espera.append(
                         (LinhaC['Transacao'] , LinhaDF['Transacao'])
                     )
@@ -114,6 +113,9 @@ class Protocolo2v2pl:
                     if ( filho.lock[1] == 'C' ): return 3
                     else :                       return 1  
         return None
+
+
+   
     
     def IntencionalBloqueios(self,chartype,type,operacao):    
     
