@@ -23,9 +23,6 @@ class Protocolo2v2pl:
         
         for tupla in schedule:
 
-            if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
-                self.string += 'DEAD LOCK'
-                return self.string
 
             if ( tupla[1] == 'C'):
                 if (self.Commit(tupla) ):
@@ -47,6 +44,11 @@ class Protocolo2v2pl:
                 
                 self.string+='Passos \n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
 
+            if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
+                self.string += 'DEAD LOCK'
+                return self.string
+
+
         if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
             self.string += 'DEAD LOCK'
             return self.string
@@ -62,6 +64,7 @@ class Protocolo2v2pl:
         for _ , LinhaC in dataCommit.iterrows():
             
             for _ , LinhaDF in dataFrame.iterrows():
+               
                 
                 if ( LinhaC['Operacao'] == LinhaDF['Operacao'] and 
                      LinhaC['Operacao'] == 'WL' ):
@@ -78,7 +81,6 @@ class Protocolo2v2pl:
                             ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,LinhaC['Objeto']]
                         
                         return 
-                    
                     elif ( LinhaDF['Objeto']  in LinhaC['Predecessores'] and 
                            LinhaC['Operacao'] == LinhaDF['Operacao']     and 
                            LinhaC['Operacao'] == 'WL'):
@@ -106,7 +108,8 @@ class Protocolo2v2pl:
                                 len(self.SysLockInfo)
                             ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,LinhaC['Objeto']]
                         
-                        return        
+                        return  
+                          
         if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
             return True
 
@@ -115,17 +118,22 @@ class Protocolo2v2pl:
             len(self.SysLockInfo)
         ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',1,None]
         
+        return
 
  
 
         
     def AdicionarBloqueio(self,operacao,objeto):
         database = self.Logico.Database
+        
         if objeto == database.nome:
 
             if ( 'W' == operacao or 'U' == operacao ):
+                if ( not(database.ilock[0]) ):
+                    return 3,[]
                 if ( database.lock[0] ): 
                     database.lock  = ( False , operacao )  
+                
                 else: 
                     return 3,[]
 
@@ -157,12 +165,13 @@ class Protocolo2v2pl:
 
     def AddBlock(self,Pai,operacao,objeto,chartype):
         for filho in Pai.lista:
-            
-            if ( not(filho.ilock[0]) and operacao != 'R'):
+            if ( objeto == filho.nome and 
+                  not(filho.ilock[0]) and 
+                  operacao != 'R'):
                 return 3,self.ListaPredecessor(filho,chartype)
                 
 
-            if  ( not( Pai.lock[0] ) ): 
+            if  ( not( Pai.lock[0] ) and object==filho.nome ): 
                 filho.lock = ( False , operacao )
              
             if ( objeto == filho.nome ):
@@ -186,20 +195,25 @@ class Protocolo2v2pl:
     def IntencionalBloqueios(self,chartype,type,operacao):    
     
         if   'a' == chartype:
-            pass
-            #type.predecessor.ilock = (False,operacao)
+            type.predecessor.ilock = (False,operacao)
         
         elif 't' == chartype: 
             type.predecessor.ilock = (False,operacao)
+            type.predecessor.predecessor.ilock  = (False,operacao) 
+
         
         elif 'p' == chartype:
             type.predecessor.ilock              = (False,operacao)
             type.predecessor.predecessor.ilock  = (False,operacao) 
+            type.predecessor.predecessor.predecessor.predecessor.ilock  = (False,operacao) 
+
         
         elif 'tu' == chartype:
             type.predecessor.ilock                          = (False,operacao)
             type.predecessor.predecessor.ilock              = (False,operacao) 
             type.predecessor.predecessor.predecessor.ilock  = (False,operacao) 
+            type.predecessor.predecessor.predecessor.predecessor.ilock  = (False,operacao) 
+
             
 
 
