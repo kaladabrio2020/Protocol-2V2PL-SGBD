@@ -2,28 +2,33 @@ import pandas as pd
 
 
 class Protocolo2v2pl:
-    Espera      = []
-    
-    SysLockInfo = pd.DataFrame(
-        {
+
+
+
+    def __init__(self,Logico): 
+        self.Logico = Logico
+        self.string = ''
+        self.Espera = []
+        self.SysLockInfo = pd.DataFrame({
             'Transacao':[],
             'Objeto'   :[],
             'Operacao' :[],
             'Status'   :[],
             'Predecessores':[]
-        }
-    )
+        })
 
-
-    def __init__(self,Logico): 
-        self.Logico = Logico
-
+    def GetString(self): return self.string
+    
+    def GetEspera(self): return self.Espera
+    
     def SetSysLockInfo(self,schedule):
+        
         for tupla in schedule:
 
             if ( tupla[1] == 'C'):
-                break
-                self.Commit(tupla)  
+                self.Commit(tupla) 
+                self.string+='Passos \n'+'Espera:'+str(self.Espera)+'\n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
+
             else:
                 Status,predecessores = self.AdicionarBloqueio(tupla[1],tupla[2])
                 
@@ -34,37 +39,71 @@ class Protocolo2v2pl:
                      tupla[1]+'L',
                      Status,
                      ','.join(predecessores)]
+                
+                self.string+='Passos \n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
             
-        
-        print(self.SysLockInfo)
+       
 
     def Commit(self,tuplaDoCommit):
         transacao    = tuplaDoCommit[0]
-
+        
         dataCommit   = self.SysLockInfo.loc[self.SysLockInfo['Transacao'] == transacao]
-
-        dataFrame    = self.SysLockInfo[self.SysLockInfo.index<transacao]
+        dataFrame    = self.SysLockInfo[self.SysLockInfo['Transacao']!=transacao]
+        
 
         for IndiceC , LinhaC in dataCommit.iterrows():
             
             for IndiceDF , LinhaDF in dataFrame.iterrows():
                 
-                
                 if ( LinhaC['Operacao'] == LinhaDF['Operacao'] and 
                      LinhaC['Operacao'] == 'WL' ):
-
                     
-                    self.Espera.append(
+                    if ( LinhaC['Objeto']  in LinhaDF['Predecessores'] or
+                         LinhaDF['Objeto'] in LinhaDF['Predecessores']):
+                                            
+                        self.Espera.append(
+                                (LinhaDF['Transacao'],LinhaC['Transacao'])
+                            )
+
+                        self.SysLockInfo.loc[
+                                len(self.SysLockInfo)
+                            ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,LinhaC['Objeto']]
+                        
+                        return 
+                    
+                    elif ( LinhaDF['Objeto']  in LinhaC['Predecessores'] and 
+                           LinhaC['Operacao'] == LinhaDF['Operacao']     and 
+                           LinhaC['Operacao'] == 'WL'):
+                        
+                        self.Espera.append(
                             (LinhaDF['Transacao'],LinhaC['Transacao'])
                         )
 
-                    self.SysLockInfo.loc[
-                            len(self.SysLockInfo)
-                        ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,None]
-                else:
-                    self.SysLockInfo.loc[
-                            len(self.SysLockInfo)
-                        ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',1,None]
+                        self.SysLockInfo.loc[
+                                len(self.SysLockInfo)
+                            ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,LinhaC['Objeto']]
+                        
+                        return    
+                    
+                    elif ( 
+                           LinhaC['Operacao'] == LinhaDF['Operacao'] and 
+                           LinhaC['Operacao'] == 'WL'                and 
+                           LinhaC['Status']   == 3):
+                        
+                        self.Espera.append(
+                            (LinhaDF['Transacao'],LinhaC['Transacao'])
+                        )
+
+                        self.SysLockInfo.loc[
+                                len(self.SysLockInfo)
+                            ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,LinhaC['Objeto']]
+                        
+                        return        
+
+                
+        self.SysLockInfo.loc[
+            len(self.SysLockInfo)
+        ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',1,None]
         
 
  
@@ -82,18 +121,16 @@ class Protocolo2v2pl:
 
             if ( 'R' == operacao ):
                 if  ( database.lock[1] == 'U' ): return 3,[]
-                if  ( database.lock[1] == 'C' ): return 3,[]
                 else:                            return 1,[]
+
         #===============================================================    
         
         numero = self.AddBlock(database,operacao,objeto,'a')
         
         if (numero != None):return numero
-
-        for area in database.lista:
-             
-            numero = self.AddBlock(area,operacao,objeto,'t') 
         
+        for area in database.lista:
+            numero = self.AddBlock(area,operacao,objeto,'t')             
             if (numero != None):return numero
 
             for tabela in area.lista: 
@@ -110,10 +147,11 @@ class Protocolo2v2pl:
 
     def AddBlock(self,Pai,operacao,objeto,chartype):
         for filho in Pai.lista:
-            print(Pai.nome,Pai.ilock[0])
-            if  ( not( Pai.ilock[0]) and operacao != 'R'):
-                return 3 
             
+            if ( not(filho.ilock[0]) and operacao != 'R'):
+                return 3,self.ListaPredecessor(filho,chartype)
+                
+
             if  ( not( Pai.lock[0] ) ): 
                 filho.lock = ( False , operacao )
              
@@ -138,7 +176,8 @@ class Protocolo2v2pl:
     def IntencionalBloqueios(self,chartype,type,operacao):    
     
         if   'a' == chartype:
-            type.predecessor.ilock = (False,operacao)
+            pass
+            #type.predecessor.ilock = (False,operacao)
         
         elif 't' == chartype: 
             type.predecessor.ilock = (False,operacao)
@@ -152,6 +191,7 @@ class Protocolo2v2pl:
             type.predecessor.predecessor.ilock              = (False,operacao) 
             type.predecessor.predecessor.predecessor.ilock  = (False,operacao) 
             
+
 
 
     def ListaPredecessor(self,type,chartype):

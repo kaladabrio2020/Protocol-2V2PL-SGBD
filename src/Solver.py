@@ -3,8 +3,6 @@ from .Tratamento   import TratamentoString
 from .Protocol     import CriandoLogico
 from .Protocol     import Protocolo2v2pl
 
-
-
 def solver(S):
     criando  = TratamentoString.Tratamento(S)
     
@@ -18,6 +16,14 @@ def solver(S):
         CriandoLogico.CriandoLogico()
         )
     protocol.SetSysLockInfo(criando.ordem_schedules)
+
+    grafo.grafoEspera(protocol.GetEspera())
+    print(protocol.GetString())
+    return protocol.GetString()
+
+    
+    
+
 
     
     

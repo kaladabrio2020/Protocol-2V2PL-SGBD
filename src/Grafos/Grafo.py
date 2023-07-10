@@ -40,6 +40,15 @@ class Grafo:
             string = ' Tem ciclo'
         plt.title(string)
         plt.savefig('grafo.png')
-        
 
-        
+
+    def grafoEspera(self,Espera):
+        A = Espera
+        G   = nx.DiGraph()
+        G.add_nodes_from(self.transaction)
+
+        G.add_edges_from(A)
+        pos = nx.circular_layout(G) 
+        nx.draw(G, pos,  with_labels = True, arrows = True, connectionstyle='arc3, rad = 0.1')
+        plt.savefig('grafoEspera.png')
+        plt.show()

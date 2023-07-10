@@ -39,8 +39,10 @@ class Menu:
     def exit(self)  :sys.exit()
     
     def window(self):return self.master
+    
     def Solver(self):
         string = solver(self.schedules.get())
+        print(string)
         self.Popup(string)
 
     def Popup(self,string):
@@ -74,5 +76,5 @@ class Menu:
         frame_gera.pack()
 
 if __name__=='__main__': 
-    solver('r1(tp1)w1(tp1)r2(a1)w2(a1)c2c1')
-    # ( Menu(tk.Tk()).window() ).mainloop()
+    #solver('')
+    ( Menu(tk.Tk()).window() ).mainloop()
