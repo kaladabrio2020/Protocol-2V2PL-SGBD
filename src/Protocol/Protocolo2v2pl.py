@@ -30,8 +30,8 @@ class Protocolo2v2pl:
             if ( tupla[1] == 'C'):
                 self.OrdemCommit.append(tupla[0])
 
-                if (self.Commit(tupla) ):
-                    self.string += 'DEAD LOCK'
+                if ( self.Commit(tupla) ):
+                    self.string += 'ENTROU EM DEAD LOCK\n'+self.ultimoEscalonado(tupla)   
                     return self.string
 
                 self.string+='Passos \n'+'Espera:'+str(self.Espera)+'\n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
@@ -50,16 +50,24 @@ class Protocolo2v2pl:
                 self.string+='Passos \n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
 
             if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
-                self.string += 'DEAD LOCK'
+                self.string += 'ENTROU EM DEAD LOCK\n'+self.ultimoEscalonado(tupla)
                 return self.string
 
 
         if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
-            self.string += 'DEAD LOCK\n'
+            self.string += 'ENTROU EM DEAD LOCK\n'+self.ultimoEscalonado(tupla)
             return self.string
-        if (len(self.Espera)!=0):
-            self.Escalonamento()
-        else: self.Removendo()
+        
+        if ( len(self.Espera)!=0 ): self.Escalonamento()
+        else:                       self.Removendo()
+    
+    def ultimoEscalonado(self,tupla):
+        lista = []
+        for tuplas in self.schedule:
+            
+            if (tupla[0] == tuplas[0]):
+                lista.append(tuplas)
+        return str(lista)
 
     def Escalonamento(self):
         lista = []
@@ -84,8 +92,9 @@ class Protocolo2v2pl:
             if (index in tupla and oper in tupla):return True
         return False
     
-    def EscalonadoOrdem(self):
-        
+
+
+    def EscalonadoOrdem(self):   
         for index in self.OrdemCommit:
             for tupla in self.schedule:
                 if (tupla[0] == index and tupla[1]!= 'C'):
@@ -214,13 +223,10 @@ class Protocolo2v2pl:
 
         if (len(self.SysLockInfo)!=0):
             data = self.SysLockInfo.loc[self.SysLockInfo['Transacao']==tuplaDoCommit[0]]
-
-            self.SysLockInfo.loc[ len(self.SysLockInfo) ] = [tuplaDoCommit[0],data['Objeto'][0],tuplaDoCommit[1]+'L',1,None]
-        
+            self.SysLockInfo.loc[ len(self.SysLockInfo) ] = [tuplaDoCommit[0],data['Objeto'].values[0],tuplaDoCommit[1]+'L',1,None]       
         return
 
  
-
         
     def AdicionarBloqueio(self,operacao,objeto):
         database = self.Logico.Database
@@ -231,8 +237,7 @@ class Protocolo2v2pl:
                 if ( not(database.ilock[0]) ):
                     return 3,[]
                 if ( database.lock[0] ): 
-                    database.lock  = ( False , operacao )  
-                
+                    database.lock  = ( False , operacao )      
                 else: 
                     return 3,[]
 

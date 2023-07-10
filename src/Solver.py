@@ -23,6 +23,7 @@ def grafoEspera(Espera,transacoes):
             return 'Dead lock'
         else:                                     
             return' Tem ciclo'
+        
 def solver(S):
     print('Escalonador :' ,S)
     criando  = TratamentoString.Tratamento(S)

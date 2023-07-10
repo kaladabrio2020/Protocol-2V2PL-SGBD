@@ -9,7 +9,7 @@ def VerificaGrafoTemCiclo(Espera,tamanho):
 
         G.add_edges_from(A)
         pos = nx.circular_layout(G) 
-        plt.savefig('null.png')
+        plt.savefig('grafoEspera.png')
 
         if len(list(nx.simple_cycles(G))) != 0 :  
             return True
