@@ -53,9 +53,9 @@ class Menu:
         frame_gera   = tk.Frame(popup)
         frame_image  = tk.Frame(frame_gera)
         frame_texto  = tk.Frame(frame_gera) 
-        tk.Label(frame_image,text='Grafo de serialização' ).grid(row=0,column=0)
+        tk.Label(frame_image,text='Grafo de Espera' ).grid(row=0,column=0)
 
-        image   = Image.open('grafo.png')
+        image   = Image.open('grafoEspera.png')
         image   = image.resize((420,450))
         display = ImageTk.PhotoImage(image)
         
@@ -76,5 +76,6 @@ class Menu:
         frame_gera.pack()
 
 if __name__=='__main__': 
-    solver('r1(tp1)w1(tp1)w2(p1)w3(t1)c3c2c1')
+    
+    print(solver(input('Digite Escalonador :')))
     #( Menu(tk.Tk()).window() ).mainloop()

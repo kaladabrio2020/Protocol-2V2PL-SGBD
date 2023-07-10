@@ -51,6 +51,7 @@ class Grafo:
         G.add_edges_from(A)
         pos = nx.circular_layout(G) 
         nx.draw(G, pos,  with_labels = True, arrows = True, connectionstyle='arc3, rad = 0.1')
+        plt.show()
         plt.savefig('grafoEspera.png')
 
         if len(list(nx.simple_cycles(G))) != 0 :  

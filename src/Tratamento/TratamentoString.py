@@ -7,7 +7,7 @@ def extrair_numeros_regex(operacao):
 
 def extrair_valor_entre_parenteses(operacao):
     correspondencias = re.findall(r'\((.*?)\)', operacao)[0]
-
+    
     if correspondencias: 
         return correspondencias.split(',')
     else:                
@@ -18,7 +18,7 @@ class Tratamento:
     def __init__(self,S): 
         
         self.schedules       = self.tratamento_schedules(S.replace(')',') '))
-    
+        
         self.ordem_schedules = []
         self.transacoes      = []
 
@@ -26,6 +26,8 @@ class Tratamento:
     def Criando_transacao(self):
         index = 0
         for operacao in self.schedules.split(' '):
+            
+
             
             if (operacao != ''):
                 NumeroDaTransacao = extrair_numeros_regex(operacao)[0]
@@ -40,6 +42,7 @@ class Tratamento:
                     ( NumeroDaTransacao , operacao[0] , tipoObjeto )
                 )            
                 index+=1
+        
             
     def tratamento_schedules(self,S):
         new_S = ''
