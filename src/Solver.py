@@ -11,7 +11,6 @@ def solver(S):
     grafo   = Grafo.Grafo(criando.ordem_schedules,criando.transacoes)
     grafo.Plotar_grafo()
 
-    
     protocol = Protocolo2v2pl.Protocolo2v2pl(
         CriandoLogico.CriandoLogico(),len(grafo.transacoes)
         )
