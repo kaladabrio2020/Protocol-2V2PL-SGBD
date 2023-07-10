@@ -13,7 +13,7 @@ def solver(S):
 
     
     protocol = Protocolo2v2pl.Protocolo2v2pl(
-        CriandoLogico.CriandoLogico()
+        CriandoLogico.CriandoLogico(),len(grafo.transacoes)
         )
     protocol.SetSysLockInfo(criando.ordem_schedules)
 

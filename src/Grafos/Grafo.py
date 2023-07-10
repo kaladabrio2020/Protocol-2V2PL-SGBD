@@ -3,10 +3,10 @@ import numpy    as np
 import matplotlib.pyplot as plt
 
 class Grafo:
-    def __init__(self , ordem_schedules,transaction):
+    def __init__(self , ordem_schedules,transacoes):
         self.digraph = []
         self.ordem_schedules = ordem_schedules
-        self.transaction     = transaction
+        self.transacoes      = transacoes
     
     def Grafo_serialização(self):
         index = 1
@@ -24,11 +24,12 @@ class Grafo:
                     if (tupla_i[2] == tupla_j[2]): self.digraph.append((tupla_i[0],tupla_j[0]))
             index+=1
     
+    
     def Plotar_grafo(self):
         self.Grafo_serialização()
 
         G = nx.DiGraph()
-        G.add_nodes_from(self.transaction)
+        G.add_nodes_from(self.transacoes)
         G.add_edges_from(self.digraph)
 
         pos = nx.circular_layout(G) 
@@ -45,10 +46,15 @@ class Grafo:
     def grafoEspera(self,Espera):
         A = Espera
         G   = nx.DiGraph()
-        G.add_nodes_from(self.transaction)
+        G.add_nodes_from(self.transacoes)
 
         G.add_edges_from(A)
         pos = nx.circular_layout(G) 
         nx.draw(G, pos,  with_labels = True, arrows = True, connectionstyle='arc3, rad = 0.1')
         plt.savefig('grafoEspera.png')
-        plt.show()
+
+        if len(list(nx.simple_cycles(G))) != 0 :  
+            return 'Dead lock'
+        else:                                     
+            return' Tem ciclo'
+        

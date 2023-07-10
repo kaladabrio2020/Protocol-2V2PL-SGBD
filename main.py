@@ -76,5 +76,5 @@ class Menu:
         frame_gera.pack()
 
 if __name__=='__main__': 
-    #solver('')
-    ( Menu(tk.Tk()).window() ).mainloop()
+    solver('r1(tp1)w1(tp1)w2(a2)c1c2')
+    #( Menu(tk.Tk()).window() ).mainloop()

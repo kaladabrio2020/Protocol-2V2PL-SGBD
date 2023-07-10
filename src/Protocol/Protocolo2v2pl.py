@@ -1,14 +1,12 @@
-import pandas as pd
-
-
+import pandas   as pd
+from ..Protocol import Ciclos as cl
 class Protocolo2v2pl:
+    def __init__(self,Logico,tamanho): 
+        self.tamanho = tamanho
+        self.Logico  = Logico
+        self.string  = ''
+        self.Espera  = []
 
-
-
-    def __init__(self,Logico): 
-        self.Logico = Logico
-        self.string = ''
-        self.Espera = []
         self.SysLockInfo = pd.DataFrame({
             'Transacao':[],
             'Objeto'   :[],
@@ -25,8 +23,15 @@ class Protocolo2v2pl:
         
         for tupla in schedule:
 
+            if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
+                self.string += 'DEAD LOCK'
+                return self.string
+
             if ( tupla[1] == 'C'):
-                self.Commit(tupla) 
+                if (self.Commit(tupla) ):
+                    self.string += 'DEAD LOCK'
+                    return self.string
+
                 self.string+='Passos \n'+'Espera:'+str(self.Espera)+'\n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
 
             else:
@@ -41,8 +46,11 @@ class Protocolo2v2pl:
                      ','.join(predecessores)]
                 
                 self.string+='Passos \n'+self.SysLockInfo.drop(columns='Predecessores').to_string()+'\n\n'
-            
-       
+
+        if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
+            self.string += 'DEAD LOCK'
+            return self.string
+
 
     def Commit(self,tuplaDoCommit):
         transacao    = tuplaDoCommit[0]
@@ -51,9 +59,9 @@ class Protocolo2v2pl:
         dataFrame    = self.SysLockInfo[self.SysLockInfo['Transacao']!=transacao]
         
 
-        for IndiceC , LinhaC in dataCommit.iterrows():
+        for _ , LinhaC in dataCommit.iterrows():
             
-            for IndiceDF , LinhaDF in dataFrame.iterrows():
+            for _ , LinhaDF in dataFrame.iterrows():
                 
                 if ( LinhaC['Operacao'] == LinhaDF['Operacao'] and 
                      LinhaC['Operacao'] == 'WL' ):
@@ -99,6 +107,8 @@ class Protocolo2v2pl:
                             ] = [tuplaDoCommit[0],LinhaC['Objeto'],tuplaDoCommit[1]+'L',3,LinhaC['Objeto']]
                         
                         return        
+        if ( cl.VerificaGrafoTemCiclo(self.Espera,self.tamanho)):
+            return True
 
                 
         self.SysLockInfo.loc[

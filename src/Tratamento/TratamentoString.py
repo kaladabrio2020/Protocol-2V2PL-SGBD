@@ -22,6 +22,7 @@ class Tratamento:
         self.ordem_schedules = []
         self.transacoes      = []
 
+
     def Criando_transacao(self):
         index = 0
         for operacao in self.schedules.split(' '):
