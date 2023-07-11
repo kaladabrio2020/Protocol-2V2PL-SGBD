@@ -1,5 +1,6 @@
 import pandas   as pd
 from ..Protocol import Ciclos as cl
+
 class Protocolo2v2pl:
     def __init__(self,Logico,tamanho,schedule): 
         self.tamanho     = tamanho

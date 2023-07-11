@@ -37,12 +37,12 @@ def solver(S):
         criando.ordem_schedules
         )
     protocol.SetSysLockInfo()
-
+    
     grafoEspera(protocol.GetEspera(),criando.transacoes)
     if ( 'DEAD LOCK' in protocol.GetString()):
         return protocol.GetString()
     else:
-        return 'New Escalonador :'+protocol.GetString()+str(protocol.GetNewSchedule())
+        return 'New Escalonador :'+protocol.GetString()+'New Escalonador :'+str(protocol.GetNewSchedule())
 
     
     

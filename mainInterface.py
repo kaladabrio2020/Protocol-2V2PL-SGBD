@@ -19,10 +19,11 @@ class Menu:
 
         ttk.Label( self.frame_1, text = 'Escrevar Schedules' ).grid(row=0, column=0)
 
+
         self.schedules = StringVar()
         ttk.Entry(
             self.frame_1, width = 40, textvariable = self.schedules
-        ).grid(row=1, column=0)
+        ).grid(row=2, column=0)
 
         ttk.Button(
             self.frame_2, text = 'Run', command = self.Solver  
@@ -42,7 +43,6 @@ class Menu:
     
     def Solver(self):
         string = solver(self.schedules.get())
-        print(string)
         self.Popup(string)
 
     def Popup(self,string):
@@ -54,6 +54,7 @@ class Menu:
         frame_image  = tk.Frame(frame_gera)
         frame_texto  = tk.Frame(frame_gera) 
         tk.Label(frame_image,text='Grafo de Espera' ).grid(row=0,column=0)
+        
 
         image   = Image.open('grafoEspera.png')
         image   = image.resize((420,450))
@@ -76,6 +77,4 @@ class Menu:
         frame_gera.pack()
 
 if __name__=='__main__': 
-    
-    print(solver(input('Digite Escalonador :')))
-    #( Menu(tk.Tk()).window() ).mainloop()
+    ( Menu(tk.Tk()).window() ).mainloop()
